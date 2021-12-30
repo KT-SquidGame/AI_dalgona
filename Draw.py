@@ -18,6 +18,7 @@ global start_condition
 start_condition = False
 global starttimer
 starttimer= False
+global img
 
 
 color = (0, 0, 0)  # 컬러지정
@@ -33,9 +34,10 @@ xp, yp = 0, 0
 def timer(startlist, shape_num):
     global start_condition
     global starttimer
+    global img
     time_limit = time.time() + 3
     while time.time() < time_limit:
-        print(time_limit-time.time())
+        cv2.putText(img, str(round(time_limit-time.time())), (10, 100),cv2.FONT_HERSHEY_PLAIN, 5, (0,0,255), 2)
         if start_condition == False and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
             startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
             pass
@@ -48,15 +50,14 @@ def timer(startlist, shape_num):
 
 
 # 달고나 모양 랜덤 선택
-# shape_num = random.randrange(0,5)
-shape_num = 4
+shape_num = random.randrange(0,5)
+# shape_num = 0
 
 # 달고나 모양 좌표 추출
 imgCanvas = cv2.imread(imglist[shape_num])
 imgray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
 ret, thr = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY_INV)
 contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-# print(len(contours[1]))
 
 # 비교를 위한 결과값
 imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
@@ -108,25 +109,32 @@ while True:
             cv2.line(imgCanvas, (xp, yp), (x1, y1), color, brushThickness)
             cv2.line(imgCanvas1, (xp, yp), (x1, y1), color, brushThickness)
             xp, yp = x1, y1
+
             # 좌표 비교(채점)
             correct = False
+            broken = True
             for i in range(len(contours[1])):
+                if contours[1][i][0][0] - 23 < x1 < contours[1][i][0][0] + 23 and \
+                    contours[1][i][0][1] - 23 < y1 < contours[1][i][0][1] + 23 and broken == True:
+                    broken = False
+                    
                 if (contours[1][i][0][0] - 10 < x1 < contours[1][i][0][0] + 10) and \
                     (contours[1][i][0][1] - 10 < y1 < contours[1][i][0][1] + 10):
                     correct = True
                     print("ALIVE")
                     log.append(1)
                     break
-
+            if broken == True:
+                print("Dalgona Broken")
+                quit()
             if correct == False:
                 print("*********************die***********************")
                 log.append(0)
             print(len(log))
             if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
+                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 200 < len(log):
                 print("game complete----------------")
                 break
-# and len(contours[1]) < len(log)
 
 
     cv2.imshow('dd', imgCanvas1)
@@ -135,4 +143,8 @@ while True:
     cv2.waitKey(1)
 
 
-dr.score(contours[1], imgCanvas1, shape_num)
+if dr.score(contours[1], imgCanvas1, shape_num) == "success":
+    print("점수 : " + str(log.count(1)/len(log)*100))
+elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
+    print("실패")
+

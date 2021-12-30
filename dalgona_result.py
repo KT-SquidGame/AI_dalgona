@@ -3,20 +3,15 @@ import cv2
 
 def score(target, submit, shape_num):
     # 매칭을 위한 이미지 읽기
-    # target = cv2.imread(target) # 매칭 대상
-    # shapes = cv2.imread(submit) # 그린 도형
     shapes = submit
 
     # 그레이 스케일 변환
-    # targetGray = cv2.cvtColor(target, cv2.COLOR_BGR2GRAY)
     shapesGray = cv2.cvtColor(shapes, cv2.COLOR_BGR2GRAY)
     
     # 바이너리 스케일 변환
-    # ret, targetTh = cv2.threshold(targetGray, 128, 255, cv2.THRESH_BINARY_INV)
     ret, shapesTh = cv2.threshold(shapesGray, 20, 255, cv2.THRESH_BINARY_INV)
 
     # 컨투어 찾기
-    # cntrs_target, _ = cv2.findContours(targetTh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cntrs_shapes, _ = cv2.findContours(shapesTh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     # 대상 도형의 사이즈 측정
@@ -42,11 +37,11 @@ def score(target, submit, shape_num):
         for cand in matching:
             print(cand)
             # 20% 이상 크면 pass
-            if cand[1] > 1.5:
+            if cand[1] > 1.8:
                 continue
             # 매칭 점수가 0.3 이하이고, 사이즈가 20% 이하로 차이나면 성공
-            elif 1.0 <= cand[1] <= 1.5:
-                if cand[0] <= 3:
+            elif 1.0 <= cand[1] <= 1.8:
+                if cand[0] <= 4.3:
                     return 'success'
             # 사이즈로 정렬했기 때문에 이 뒤로는 볼 필요도 없이 실패
             else:
@@ -60,25 +55,10 @@ def score(target, submit, shape_num):
                 continue
             # 매칭 점수가 0.3 이하이고, 사이즈가 20% 이하로 차이나면 성공
             elif 1.0 <= cand[1] <= 1.5:
-                if cand[0] <= 1:
+                if cand[0] <= 1.5:
                     return 'success'
             # 사이즈로 정렬했기 때문에 이 뒤로는 볼 필요도 없이 실패
             else:
                 break
     
-    # 실패
-
-
-    # cv2.imshow('target', target)
-    # cv2.imshow('Match Shape', shapes)
-    # cv2.waitKey()
-    # cv2.destroyAllWindows()
-
     return 'fail'
-
-# 이미지 주소
-# target_image = './images/circle.png'
-# submitted_image = './images/test2.png'
-
-# 실행 결과
-# print(score(target_image, submitted_image))
