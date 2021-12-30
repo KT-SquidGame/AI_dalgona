@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import HandDetectModule as hdm
+import dalgona_result as dr
 
 #######################
 brushThickness = 15
@@ -8,7 +9,7 @@ display_size_width = 500
 display_size_height = 500
 ########################
 
-color = (51, 51, 204) #컬러지정
+color = (0,0,0) #컬러지정
 
 cap = cv2.VideoCapture(1) #웹캠 번호 지정
 # print(cap.get(3), cap.get(4))
@@ -19,12 +20,17 @@ detector = hdm.MPHands(detectionCon=0.85,maxHands=1)
 xp, yp = 0, 0
 # imgCanvas = np.zeros((display_size_height, display_size_width, 3), np.uint8)
 
+
 #달고나 모양 좌표 추출
 imgCanvas = cv2.imread('img/dal.jpg')
 imgray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
 ret, thr = cv2.threshold(imgray, 127, 255, 0)
 contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 print(len(contours[1]))
+
+
+#비교를 위한 결과값
+imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
 
 start = False
 log = []
@@ -66,6 +72,7 @@ while True:
                 xp, yp = x1, y1
 
             cv2.line(imgCanvas, (xp, yp), (x1, y1), color, brushThickness)
+            cv2.line(imgCanvas1, (xp, yp), (x1, y1), color, brushThickness)
             xp, yp = x1, y1
             # 좌표 비교(채점)
             correct = False
@@ -81,6 +88,7 @@ while True:
             if correct == True and 230 < x1 < 250 and 132 < y1 < 152 and len(contours[1]) < len(log):
                 print("game complete----------------")
             # print(len(log))
+            # print(dr.score(contours[1],imgCanvas))
 
         
     #한 화면에 표현
@@ -90,9 +98,17 @@ while True:
     # img = cv2.bitwise_and(img,imgInv)
     # img = cv2.bitwise_or(img,imgCanvas)
 
+    #그린 이미지 비교
+    # imgCanvas1 = imgCanvas
+    # imgray1 = cv2.cvtColor(imgCanvas1, cv2.COLOR_BGR2GRAY)
+    # ret1, thr1 = cv2.threshold(imgray1, 1, 255, cv2.THRESH_BINARY_INV)
+    # contours1, _ = cv2.findContours(thr1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    # cv2.drawContours(imgCanvas1, contours1, -1, (0,0,255),1)
+    cv2.imshow('dd',imgCanvas1)
 
     # # img = cv2.addWeighted(img,0.5,imgCanvas,0.5,0) #한 화면에 동시에 표현
     cv2.imshow("CAM", img)
     cv2.imshow("Canvas", imgCanvas)
+    # cv2.imshow('d',dr.score(contours[1],imgCanvas))
     # cv2.imshow("Inv", imgInv)
     cv2.waitKey(1)
