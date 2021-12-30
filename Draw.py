@@ -4,6 +4,7 @@ import HandDetectModule as hdm
 import dalgona_result as dr
 import random
 from threading import Thread
+import time
 
 #######################
 brushThickness = 15
@@ -13,6 +14,12 @@ startlist = [[250,143],[250,122],[250,108],[250,117],[250,117]] #1. 삼각형, 2
 imglist = ["img/tri.jpg", "img/circle.jpg", "img/star.jpg", "img/tree.jpg", "img/um.jpg"]
 ########################
 
+global start_condition
+start_condition = False
+global starttimer
+starttimer= False
+
+
 color = (0, 0, 0)  # 컬러지정
 
 cap = cv2.VideoCapture(1)  # 웹캠 번호 지정
@@ -21,6 +28,24 @@ cap.set(4, display_size_height)  # 세로 크기 수정
 
 detector = hdm.MPHands(detectionCon=0.85, maxHands=1)
 xp, yp = 0, 0
+
+
+def timer(startlist, shape_num):
+    global start_condition
+    global starttimer
+    time_limit = time.time() + 3
+    while time.time() < time_limit:
+        print(time_limit-time.time())
+        if start_condition == False and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
+            startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
+            pass
+
+        else:
+            starttimer = False
+            return
+
+    start_condition = True
+
 
 # 달고나 모양 랜덤 선택
 # shape_num = random.randrange(0,5)
@@ -36,14 +61,13 @@ contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 # 비교를 위한 결과값
 imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
 
-start = False
-starttimer = False
+
 log = []
 while True:
     # 웹캠
     success, img = cap.read()
     img = cv2.flip(img, 1)
-    if start == False:
+    if start_condition == False:
         imgCanvas = cv2.imread(imglist[shape_num])
 
     # 손인식, 손가락 좌표 검출
@@ -61,7 +85,7 @@ while True:
         fingers = detector.Up()
 
         # 손가락 2개 업일 때
-        if fingers[1] and fingers[2]:
+        if fingers[1] and fingers[2] and start_condition == False:
             xp, yp = 0, 0
             cv2.circle(imgCanvas, (x1, y1), 8, color, cv2.FILLED)
 
@@ -70,13 +94,12 @@ while True:
                 startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
                 print("game start----------------")
                 starttimer = True
-                thread = Thread(target=hdm.MPHands.timer, args=(startlist,shape_num))
+                thread = Thread(target=timer, args=(startlist,shape_num))
                 thread.start()
 
 
         # 손가락 1개 업일 때
-        if fingers[1] and fingers[2] == False:
-            start = True
+        if fingers[1] and fingers[2] == False and start_condition == True:
             cv2.circle(img, (x1, y1), 15, color, cv2.FILLED)
 
             if xp == 0 and yp == 0:
@@ -93,18 +116,17 @@ while True:
                     correct = True
                     print("ALIVE")
                     log.append(1)
-
                     break
+
             if correct == False:
                 print("*********************die***********************")
                 log.append(0)
-            # if correct == True:
-            #     log.append(1)
+            print(len(log))
             if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and len(contours[1]) < log.count(1):
+                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
                 print("game complete----------------")
                 break
-
+# and len(contours[1]) < len(log)
 
 
     cv2.imshow('dd', imgCanvas1)

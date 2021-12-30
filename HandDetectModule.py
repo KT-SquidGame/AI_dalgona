@@ -1,6 +1,5 @@
 import cv2
 import mediapipe as mp
-import time
  
 class MPHands():
     def __init__(self, mode=False, maxHands=2, detectionCon=0.5, trackCon=0.5):
@@ -58,10 +57,3 @@ class MPHands():
                 fingers_state.append(0)
 
         return fingers_state
-
-    def timer(startlist, shape_num):
-        # time_limit = time.time() + 3
-        # while time.time() < time_limit:
-        for t in range(3,0,-1):
-            time.sleep(1)
-            print(t)
