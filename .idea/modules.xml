@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/AI_dalgona.iml" filepath="$PROJECT_DIR$/.idea/AI_dalgona.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ktsquid.iml" filepath="$PROJECT_DIR$/.idea/ktsquid.iml" />
     </modules>
   </component>
 </project>

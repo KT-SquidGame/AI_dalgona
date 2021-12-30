@@ -1,7 +1,7 @@
 import cv2
 
 
-def score(target, submit):
+def score(target, submit, shape_num):
     # 매칭을 위한 이미지 읽기
     # target = cv2.imread(target) # 매칭 대상
     # shapes = cv2.imread(submit) # 그린 도형
@@ -38,19 +38,33 @@ def score(target, submit):
     # 사이즈로 정렬(제일 큰게 진짜 그리고 싶었던거라는 판단)
     matching.sort(key=lambda x : -x[1])
 
-    for cand in matching:
-        print(cand)
-        print('hi')
-        # 20% 이상 크면 pass
-        if cand[1] > 1.2:
-            continue
-        # 매칭 점수가 0.3 이하이고, 사이즈가 20% 이하로 차이나면 성공
-        elif 1.0 <= cand[1] <= 1.2:
-            if cand[0] <= 0.3:
-                return 'success'
-        # 사이즈로 정렬했기 때문에 이 뒤로는 볼 필요도 없이 실패
-        else:
-            break
+    if shape_num == 4:
+        for cand in matching:
+            print(cand)
+            # 20% 이상 크면 pass
+            if cand[1] > 1.5:
+                continue
+            # 매칭 점수가 0.3 이하이고, 사이즈가 20% 이하로 차이나면 성공
+            elif 1.0 <= cand[1] <= 1.5:
+                if cand[0] <= 3:
+                    return 'success'
+            # 사이즈로 정렬했기 때문에 이 뒤로는 볼 필요도 없이 실패
+            else:
+                break
+
+    else:
+        for cand in matching:
+            print(cand)
+            # 20% 이상 크면 pass
+            if cand[1] > 1.5:
+                continue
+            # 매칭 점수가 0.3 이하이고, 사이즈가 20% 이하로 차이나면 성공
+            elif 1.0 <= cand[1] <= 1.5:
+                if cand[0] <= 1:
+                    return 'success'
+            # 사이즈로 정렬했기 때문에 이 뒤로는 볼 필요도 없이 실패
+            else:
+                break
     
     # 실패
 

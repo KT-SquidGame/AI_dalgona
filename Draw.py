@@ -135,4 +135,4 @@ while True:
     cv2.waitKey(1)
 
 
-dr.score(contours[1], imgCanvas1)
+dr.score(contours[1], imgCanvas1, shape_num)
