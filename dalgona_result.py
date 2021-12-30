@@ -1,7 +1,5 @@
 import cv2
 
-import dalgona_drawing
-
 
 def score(target, submit):
     # 매칭을 위한 이미지 읽기
