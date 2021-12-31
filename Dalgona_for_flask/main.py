@@ -25,6 +25,7 @@ global hand_co
 global img
 global result
 result = "0"
+global shape_num
 
 
 cap = cv2.VideoCapture(1)
@@ -34,20 +35,6 @@ cap.set(4, display_size_height)  # 세로 크기 수정
 
 detector = hdm.MPHands(detectionCon=0.75, maxHands=1)
 xp, yp = 0, 0
-
-# 달고나 모양 랜덤 선택
-shape_num = random.randrange(0,5)
-# shape_num = 0
-
-# 달고나 모양 좌표 추출
-imgCanvas = cv2.imread(imglist[shape_num])
-imgray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
-ret, thr = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY_INV)
-contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-
-# 비교를 위한 결과값
-imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
-log = []
 
 success, img1 = cap.read()
 img2 = cv2.flip(img1, 1)
@@ -79,7 +66,17 @@ def gen_frames():
     global hand_co
     global img
     global result
+    global shape_num
 
+    # 달고나 모양 좌표 추출
+    imgCanvas = cv2.imread(imglist[shape_num])
+    imgray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
+    ret, thr = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY_INV)
+    contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    # 비교를 위한 결과값
+    imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
+    log = []
     while True:
         success, img1 = cap.read()
         if not success:
@@ -168,6 +165,7 @@ def gen_frames1():
     global start_condition
     global hand_co
     global result
+    global shape_num
 
     while result == "0":
         if start_condition == False:
@@ -193,7 +191,6 @@ def gen_frames1():
                     xp, yp = x1, y1
 
                 cv2.line(imgCanvas, (xp, yp), (x1, y1), color, brushThickness)
-                cv2.line(imgCanvas1, (xp, yp), (x1, y1), color, brushThickness)
                 xp, yp = x1, y1
         
         ret, buffer = cv2.imencode('.jpg', imgCanvas)
@@ -214,8 +211,12 @@ def video_feed():
     global starttimer
     starttimer= False
     global result
+    global shape_num
     result = "0"
-    # print("aaaaaaaaaaaaaaaaaaaaaa")
+
+    # 달고나 모양 랜덤 선택
+    shape_num = random.randrange(0,5)
+    # shape_num = 0
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/video_feed1')
