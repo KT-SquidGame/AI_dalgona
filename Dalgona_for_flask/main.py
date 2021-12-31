@@ -137,7 +137,7 @@ def gen_frames():
                             break
                     if broken == True:
                         print("Dalgona Broken")
-                        result = "Dalgona Broken"
+                        result = "1"
                         return "Dalgona Broken"
                     if correct == False:
                         print("*********************die***********************")
@@ -146,7 +146,7 @@ def gen_frames():
                     if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
                         startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
                         print("game complete----------------")
-                        result = "game end"
+                        # result = "2"
                         break
             
             ret, buffer = cv2.imencode('.jpg', img)
@@ -155,10 +155,12 @@ def gen_frames():
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     if dr.score(contours[1], imgCanvas1, shape_num) == "success":
-        print("점수 : " + str(log.count(1)/len(log)*100))
+        result = "2"
+        # print("점수 : " + str(log.count(1)/len(log)*100))
         return "점수 : " + str(log.count(1)/len(log)*100)
     elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
         print("실패")
+        result = "1"
         return "실패"
 
 def gen_frames1():
