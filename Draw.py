@@ -27,7 +27,7 @@ cap = cv2.VideoCapture(1)  # 웹캠 번호 지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
 
-detector = hdm.MPHands(detectionCon=0.85, maxHands=1)
+detector = hdm.MPHands(detectionCon=0.75, maxHands=1)
 xp, yp = 0, 0
 
 
@@ -37,7 +37,7 @@ def timer(startlist, shape_num):
     global img
     time_limit = time.time() + 3
     while time.time() < time_limit:
-        cv2.putText(img, str(round(time_limit-time.time())), (10, 100),cv2.FONT_HERSHEY_PLAIN, 5, (0,0,255), 2)
+        cv2.putText(img, str(round(time_limit-time.time())), (550, 100),cv2.FONT_HERSHEY_DUPLEX, 3, (0,0,255), 2)
         if start_condition == False and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
             startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
             pass
@@ -80,7 +80,6 @@ while True:
         # 8, 12번 x,y값
         global x1, y1
         x1, y1 = hand_co[8][1:]
-        x2, y2 = hand_co[12][1:]
 
         # 손가락업 판별
         fingers = detector.Up()
@@ -88,6 +87,7 @@ while True:
         # 손가락 2개 업일 때
         if fingers[1] and fingers[2] and start_condition == False:
             xp, yp = 0, 0
+            cv2.putText(img, "Go to start point", (50, 100),cv2.FONT_HERSHEY_DUPLEX, 1, (255,0,0), 2)
             cv2.circle(imgCanvas, (x1, y1), 8, color, cv2.FILLED)
 
             # 처음 시작 타이머
@@ -100,6 +100,8 @@ while True:
 
 
         # 손가락 1개 업일 때
+        if fingers[1] and fingers[2] == False and starttimer == False:
+            cv2.putText(img, "Two Fingers UP!", (50, 100),cv2.FONT_HERSHEY_DUPLEX, 1, (255,0,0), 2)
         if fingers[1] and fingers[2] == False and start_condition == True:
             cv2.circle(img, (x1, y1), 15, color, cv2.FILLED)
 
@@ -132,7 +134,7 @@ while True:
                 log.append(0)
             print(len(log))
             if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 200 < len(log):
+                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
                 print("game complete----------------")
                 break
 
