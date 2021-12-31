@@ -23,6 +23,9 @@ global starttimer
 starttimer= False
 global hand_co
 global img
+global result
+result = "0"
+
 
 cap = cv2.VideoCapture(1)
 color = (0, 0, 0)  # 컬러지정
@@ -75,6 +78,7 @@ def gen_frames():
     global starttimer
     global hand_co
     global img
+    global result
 
     while True:
         success, img1 = cap.read()
@@ -136,7 +140,8 @@ def gen_frames():
                             break
                     if broken == True:
                         print("Dalgona Broken")
-                        quit()
+                        result = "Dalgona Broken"
+                        return "Dalgona Broken"
                     if correct == False:
                         print("*********************die***********************")
                         log.append(0)
@@ -144,6 +149,7 @@ def gen_frames():
                     if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
                         startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
                         print("game complete----------------")
+                        result = "game end"
                         break
             
             ret, buffer = cv2.imencode('.jpg', img)
@@ -153,8 +159,10 @@ def gen_frames():
 
     if dr.score(contours[1], imgCanvas1, shape_num) == "success":
         print("점수 : " + str(log.count(1)/len(log)*100))
+        return "점수 : " + str(log.count(1)/len(log)*100)
     elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
         print("실패")
+        return "실패"
 
 def gen_frames1():
     global start_condition
@@ -199,11 +207,17 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
+    print("aaaaaaaaaaaaaaaaaaaaaa")
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/video_feed1')
 def video_feed1():
     return Response(gen_frames1(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/rr')
+def rr():
+    global result
+    return result
 
 if __name__ == '__main__':
     app.run(debug=False, host="127.0.0.1", port=5000, threaded=True, use_reloader=False)
