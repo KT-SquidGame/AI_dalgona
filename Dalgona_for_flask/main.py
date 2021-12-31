@@ -167,8 +167,9 @@ def gen_frames():
 def gen_frames1():
     global start_condition
     global hand_co
+    global result
 
-    while True:
+    while result == "0":
         if start_condition == False:
             imgCanvas = cv2.imread(imglist[shape_num])
 
@@ -199,6 +200,7 @@ def gen_frames1():
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    return
                 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -207,7 +209,13 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    print("aaaaaaaaaaaaaaaaaaaaaa")
+    global start_condition
+    start_condition = False
+    global starttimer
+    starttimer= False
+    global result
+    result = "0"
+    # print("aaaaaaaaaaaaaaaaaaaaaa")
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/video_feed1')
