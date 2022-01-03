@@ -26,6 +26,8 @@ global img
 global result
 result = "0"
 global shape_num
+global remain_time
+remain_time = 15
 
 cap = cv2.VideoCapture(0)
 color = (0, 0, 0)  # 컬러지정
@@ -57,6 +59,19 @@ def timer(startlist, shape_num):
             return
 
     start_condition = True
+    thread = Thread(target=timer1, args=())
+    thread.start()
+
+def timer1():
+    global remain_time
+    global start_condition
+    time_limit = time.time() + 15
+    while time.time() < time_limit:
+        remain_time = round(time_limit - time.time())
+        cv2.putText(img, str(remain_time), (500, 100), cv2.FONT_HERSHEY_DUPLEX, 3, (255, 0, 0), 2)
+        if start_condition == False:
+            return
+        
 
 
 def gen_frames():
@@ -66,6 +81,7 @@ def gen_frames():
     global img
     global result
     global shape_num
+    global remain_time
 
     # 달고나 모양 좌표 추출
     imgCanvas = cv2.imread(imglist[shape_num])
@@ -147,6 +163,9 @@ def gen_frames():
                         print("game complete----------------")
                         # result = "2"
                         break
+            if remain_time == 0:
+                result = "4"
+                return
 
             ret, buffer = cv2.imencode('.jpg', img)
             frame = buffer.tobytes()
@@ -245,6 +264,8 @@ def video_feed():
     global result
     global shape_num
     result = "0"
+    global remain_time
+    remain_time = 15
 
     # 달고나 모양 랜덤 선택
     shape_num = random.randrange(0, 5)

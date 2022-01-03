@@ -19,11 +19,13 @@ start_condition = False
 global starttimer
 starttimer= False
 global img
+global remain_time
+remain_time = 15
 
 
 color = (0, 0, 0)  # 컬러지정
 
-cap = cv2.VideoCapture(1)  # 웹캠 번호 지정
+cap = cv2.VideoCapture(0)  # 웹캠 번호 지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
 
@@ -47,6 +49,19 @@ def timer(startlist, shape_num):
             return
 
     start_condition = True
+    thread = Thread(target=timer1, args=())
+    thread.start()
+
+def timer1():
+    global remain_time
+    global start_condition
+    time_limit = time.time() + 15
+    while time.time() < time_limit:
+        remain_time = round(time_limit - time.time())
+        cv2.putText(img, str(remain_time), (500, 100), cv2.FONT_HERSHEY_DUPLEX, 3, (255, 0, 0), 2)
+        if start_condition == False:
+            return
+        
 
 
 # 달고나 모양 랜덤 선택
@@ -128,6 +143,17 @@ while True:
                     break
             if broken == True:
                 print("Dalgona Broken")
+                cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
+                if xp <= 250:
+                    if yp <= 250:
+                        cv2.line(imgCanvas, (400, 400), (250, 250), (200, 200, 200), 6)
+                    else:
+                        cv2.line(imgCanvas, (400, 100), (250, 250), (200, 200, 200), 6)
+                else:
+                    if yp <= 250:
+                        cv2.line(imgCanvas, (100, 400), (250, 250), (200, 200, 200), 6)
+                    else:
+                        cv2.line(imgCanvas, (100, 100), (250, 250), (200, 200, 200), 6)
                 quit()
             if correct == False:
                 print("*********************die***********************")
@@ -137,7 +163,9 @@ while True:
                 startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
                 print("game complete----------------")
                 break
-
+    if remain_time == 0:
+        result = "4"
+        break
 
     cv2.imshow('dd', imgCanvas1)
     cv2.imshow("CAM", img)
@@ -146,7 +174,19 @@ while True:
 
 
 if dr.score(contours[1], imgCanvas1, shape_num) == "success":
-    print("점수 : " + str(log.count(1)/len(log)*100))
+    score = log.count(1)/len(log)*100
+    if score <= 75:
+        print('하')
+        result = "3"
+    elif 75 < score <= 85:
+        print('중')
+        result = "2"
+    else:
+        print('상')
+        result = "1"
+    print(score)
+    print("점수 : " + str(log.count(1) / len(log) * 100))
 elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
     print("실패")
+    result = "3"
 
