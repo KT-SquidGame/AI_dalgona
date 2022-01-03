@@ -164,7 +164,7 @@ def gen_frames():
                         # result = "2"
                         break
             if remain_time == 0:
-                result = "4"
+                result = "3"
                 return
 
             ret, buffer = cv2.imencode('.jpg', img)
@@ -197,6 +197,7 @@ def gen_frames1():
     global result
     global shape_num
 
+    time.sleep(0.2)
     while result == "0":
         if start_condition == False:
             imgCanvas = cv2.imread(imglist[shape_num])
