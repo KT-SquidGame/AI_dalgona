@@ -27,7 +27,7 @@ global result
 result = "0"
 global shape_num
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 color = (0, 0, 0)  # 컬러지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
