@@ -210,9 +210,9 @@ def gen_frames1():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
-    for i in range(5):
-        cv2.line(imgCanvas, (int(random.random()*500), int(random.random()*500)), (xp, yp), (200, 200, 200), 6)
+    cv2.line(imgCanvas, (100, 100), (250, 250), (200, 200, 200), 6)
 
+    xp, yp = x1, y1
     ret2, buffer2 = cv2.imencode('.jpg', imgCanvas)
     frame2 = buffer2.tobytes()
     yield (b'--frame\r\n'
