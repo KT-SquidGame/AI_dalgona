@@ -13,22 +13,21 @@ app = Flask(__name__)
 brushThickness = 15
 display_size_width = 500
 display_size_height = 500
-startlist = [[250,143],[250,122],[250,108],[250,117],[250,117]] #1. 삼각형, 2.원, 3.별, 4. 트리, 5. 우산
+startlist = [[250, 143], [250, 122], [250, 108], [250, 117], [250, 117]]  # 1. 삼각형, 2.원, 3.별, 4. 트리, 5. 우산
 imglist = ["img/tri.jpg", "img/circle.jpg", "img/star.jpg", "img/tree.jpg", "img/um.jpg"]
 ########################
 
 global start_condition
 start_condition = False
 global starttimer
-starttimer= False
+starttimer = False
 global hand_co
 global img
 global result
 result = "0"
 global shape_num
 
-
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 color = (0, 0, 0)  # 컬러지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
@@ -41,15 +40,16 @@ img2 = cv2.flip(img1, 1)
 img2 = detector.DetectHand(img2)
 hand_co = detector.DetectCoordi(img2, draw=False)
 
+
 def timer(startlist, shape_num):
     global start_condition
     global starttimer
     global img
     time_limit = time.time() + 3
     while time.time() < time_limit:
-        cv2.putText(img, str(round(time_limit-time.time())), (550, 100),cv2.FONT_HERSHEY_DUPLEX, 3, (0,0,255), 2)
+        cv2.putText(img, str(round(time_limit - time.time())), (550, 100), cv2.FONT_HERSHEY_DUPLEX, 3, (0, 0, 255), 2)
         if start_condition == False and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-            startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
+                startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10:
             pass
 
         else:
@@ -57,7 +57,6 @@ def timer(startlist, shape_num):
             return
 
     start_condition = True
-
 
 
 def gen_frames():
@@ -81,7 +80,7 @@ def gen_frames():
         success, img1 = cap.read()
         if not success:
             break
-        else :
+        else:
             img2 = cv2.flip(img1, 1)
 
             # 손인식, 손가락 좌표 검출
@@ -100,16 +99,16 @@ def gen_frames():
                 # 손가락 2개 업일 때
                 if fingers[1] and fingers[2] and start_condition == False:
                     xp, yp = 0, 0
-                    cv2.putText(img, "Go to start point", (50, 100),cv2.FONT_HERSHEY_DUPLEX, 1, (255,0,0), 2)
+                    cv2.putText(img, "Go to start point", (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 0, 0), 2)
                     # 처음 시작 타이머
                     if starttimer == False and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                        startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 :
+                            startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10:
                         starttimer = True
-                        thread = Thread(target=timer, args=(startlist,shape_num))
+                        thread = Thread(target=timer, args=(startlist, shape_num))
                         thread.start()
 
                 if fingers[1] and fingers[2] == False and starttimer == False:
-                    cv2.putText(img, "Two Fingers UP!", (50, 100),cv2.FONT_HERSHEY_DUPLEX, 1, (255,0,0), 2)
+                    cv2.putText(img, "Two Fingers UP!", (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 0, 0), 2)
 
                 # 손가락 1개 업일 때
                 if fingers[1] and fingers[2] == False and start_condition == True:
@@ -126,11 +125,11 @@ def gen_frames():
                     broken = True
                     for i in range(len(contours[1])):
                         if contours[1][i][0][0] - 23 < x1 < contours[1][i][0][0] + 23 and \
-                            contours[1][i][0][1] - 23 < y1 < contours[1][i][0][1] + 23 and broken == True:
+                                contours[1][i][0][1] - 23 < y1 < contours[1][i][0][1] + 23 and broken == True:
                             broken = False
-                            
+
                         if (contours[1][i][0][0] - 10 < x1 < contours[1][i][0][0] + 10) and \
-                            (contours[1][i][0][1] - 10 < y1 < contours[1][i][0][1] + 10):
+                                (contours[1][i][0][1] - 10 < y1 < contours[1][i][0][1] + 10):
                             correct = True
                             print("ALIVE")
                             log.append(1)
@@ -142,26 +141,36 @@ def gen_frames():
                     if correct == False:
                         print("*********************die***********************")
                         log.append(0)
-                    print(len(log)) 
+                    print(len(log))
                     if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                        startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
+                            startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
                         print("game complete----------------")
                         # result = "2"
                         break
-            
+
             ret, buffer = cv2.imencode('.jpg', img)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     if dr.score(contours[1], imgCanvas1, shape_num) == "success":
-        result = "2"
-        # print("점수 : " + str(log.count(1)/len(log)*100))
-        return "점수 : " + str(log.count(1)/len(log)*100)
+        score = log.count(1)/len(log)*100
+        if score <= 75:
+            print('하')
+            result = "3"
+        elif 75 < score <= 85:
+            print('중')
+            result = "2"
+        else:
+            print('상')
+            result = "1"
+        print(score)
+        return "점수 : " + str(log.count(1) / len(log) * 100)
     elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
         print("실패")
-        result = "1"
+        result = "3"
         return "실패"
+
 
 def gen_frames1():
     global start_condition
@@ -194,41 +203,45 @@ def gen_frames1():
 
                 cv2.line(imgCanvas, (xp, yp), (x1, y1), color, brushThickness)
                 xp, yp = x1, y1
-        
+
         ret, buffer = cv2.imencode('.jpg', imgCanvas)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
-            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
     return
-                
+
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-   return render_template('index.html')
+    return render_template('index.html')
+
 
 @app.route('/video_feed')
 def video_feed():
     global start_condition
     start_condition = False
     global starttimer
-    starttimer= False
+    starttimer = False
     global result
     global shape_num
     result = "0"
 
     # 달고나 모양 랜덤 선택
-    shape_num = random.randrange(0,5)
+    shape_num = random.randrange(0, 5)
     # shape_num = 0
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/video_feed1')
 def video_feed1():
     return Response(gen_frames1(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/rr')
 def rr():
     global result
     return result
+
 
 if __name__ == '__main__':
     app.run(debug=False, host="127.0.0.1", port=5000, threaded=True, use_reloader=False)
