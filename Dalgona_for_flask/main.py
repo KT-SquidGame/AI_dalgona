@@ -27,7 +27,7 @@ global result
 result = "0"
 global shape_num
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 color = (0, 0, 0)  # 컬러지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
@@ -136,7 +136,7 @@ def gen_frames():
                             break
                     if broken == True:
                         print("Dalgona Broken")
-                        result = "1"
+                        result = "4"
                         return "Dalgona Broken"
                     if correct == False:
                         print("*********************die***********************")
@@ -209,14 +209,24 @@ def gen_frames1():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-    cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
-    cv2.line(imgCanvas, (100, 100), (250, 250), (200, 200, 200), 6)
+    if result == "4":
+        cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
+        if xp <= 250:
+            if yp <= 250:
+                cv2.line(imgCanvas, (400, 400), (250, 250), (200, 200, 200), 6)
+            else:
+                cv2.line(imgCanvas, (400, 100), (250, 250), (200, 200, 200), 6)
+        else:
+            if yp <= 250:
+                cv2.line(imgCanvas, (100, 400), (250, 250), (200, 200, 200), 6)
+            else:
+                cv2.line(imgCanvas, (100, 100), (250, 250), (200, 200, 200), 6)
 
-    xp, yp = x1, y1
-    ret2, buffer2 = cv2.imencode('.jpg', imgCanvas)
-    frame2 = buffer2.tobytes()
-    yield (b'--frame\r\n'
-           b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n')
+        xp, yp = x1, y1
+        ret2, buffer2 = cv2.imencode('.jpg', imgCanvas)
+        frame2 = buffer2.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n')
 
     return
 
