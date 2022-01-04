@@ -12,10 +12,10 @@ app = Flask(__name__)
 CORS(app)
 
 #######################
-brushThickness = 15
+brushThickness = 10
 display_size_width = 500
 display_size_height = 500
-startlist = [[250, 143], [250, 122], [250, 108], [250, 117], [250, 117]]  # 1. 삼각형, 2.원, 3.별, 4. 트리, 5. 우산
+startlist = [[200, 116], [200, 97], [200, 88], [200, 95], [200, 95]]  # 1. 삼각형, 2.원, 3.별, 4. 트리, 5. 우산
 imglist = ["img/tri.jpg", "img/circle.jpg", "img/star.jpg", "img/tree.jpg", "img/um.jpg"]
 ########################
 
@@ -31,7 +31,7 @@ global shape_num
 global remain_time
 remain_time = 15
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 color = (0, 0, 0)  # 컬러지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
@@ -92,7 +92,7 @@ def gen_frames():
     contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     # 비교를 위한 결과값
-    imgCanvas1 = np.ones((500, 500, 3), np.uint8) * 255
+    imgCanvas1 = np.ones((400, 400, 3), np.uint8) * 255
     log = []
     while True:
         success, img1 = cap.read()
@@ -160,8 +160,8 @@ def gen_frames():
                         print("*********************die***********************")
                         log.append(0)
                     print(len(log))
-                    if correct == True and startlist[shape_num][0] - 10 < x1 < startlist[shape_num][0] + 10 and \
-                            startlist[shape_num][1] - 10 < y1 < startlist[shape_num][1] + 10 and 150 < len(log):
+                    if correct == True and startlist[shape_num][0] - 5 < x1 < startlist[shape_num][0] + 5 and \
+                            startlist[shape_num][1] - 5 < y1 < startlist[shape_num][1] + 5 and 150 < len(log):
                         print("game complete----------------")
                         # result = "2"
                         break
@@ -223,17 +223,17 @@ def gen_frames1():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     if result == "2":
-        cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
-        if xp <= 250:
-            if yp <= 250:
-                cv2.line(imgCanvas, (400, 400), (250, 250), (200, 200, 200), 6)
+        cv2.line(imgCanvas, (x1, y1), (200, 200), (200, 200, 200), 6)
+        if x1 <= 200:
+            if y1 <= 200:
+                cv2.line(imgCanvas, (320, 320), (200, 200), (200, 200, 200), 6)
             else:
-                cv2.line(imgCanvas, (400, 100), (250, 250), (200, 200, 200), 6)
+                cv2.line(imgCanvas, (320, 80), (200, 200), (200, 200, 200), 6)
         else:
-            if yp <= 250:
-                cv2.line(imgCanvas, (100, 400), (250, 250), (200, 200, 200), 6)
+            if y1 <= 200:
+                cv2.line(imgCanvas, (80, 320), (200, 200), (200, 200, 200), 6)
             else:
-                cv2.line(imgCanvas, (100, 100), (250, 250), (200, 200, 200), 6)
+                cv2.line(imgCanvas, (80, 80), (200, 200), (200, 200, 200), 6)
 
         xp, yp = x1, y1
         ret2, buffer2 = cv2.imencode('.jpg', imgCanvas)
@@ -244,18 +244,22 @@ def gen_frames1():
     return
 
 
+# @app.route("/", methods=['GET', 'POST'])
+# def index():
+#     global start_condition
+#     start_condition = False
+#     global starttimer
+#     starttimer = False
+#     global result
+#     global shape_num
+#     result = "0"
+#     global remain_time
+#     remain_time = 15
+
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    global start_condition
-    start_condition = False
-    global starttimer
-    starttimer = False
-    global result
-    global shape_num
-    result = "0"
-    global remain_time
-    remain_time = 15
-
+    return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
