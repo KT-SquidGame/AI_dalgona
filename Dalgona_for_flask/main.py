@@ -6,8 +6,10 @@ import dalgona_result as dr
 import random
 from threading import Thread
 import time
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 #######################
 brushThickness = 15
@@ -26,8 +28,10 @@ global img
 global result
 result = "0"
 global shape_num
+global remain_time
+remain_time = 15
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 color = (0, 0, 0)  # 컬러지정
 cap.set(3, display_size_width)  # 가로 크기 수정
 cap.set(4, display_size_height)  # 세로 크기 수정
@@ -57,6 +61,19 @@ def timer(startlist, shape_num):
             return
 
     start_condition = True
+    thread = Thread(target=timer1, args=())
+    thread.start()
+
+
+def timer1():
+    global remain_time
+    global start_condition
+    time_limit = time.time() + 15
+    while time.time() < time_limit:
+        remain_time = round(time_limit - time.time())
+        cv2.putText(img, str(remain_time), (500, 100), cv2.FONT_HERSHEY_DUPLEX, 3, (255, 0, 0), 2)
+        if start_condition == False:
+            return
 
 
 def gen_frames():
@@ -66,6 +83,7 @@ def gen_frames():
     global img
     global result
     global shape_num
+    global remain_time
 
     # 달고나 모양 좌표 추출
     imgCanvas = cv2.imread(imglist[shape_num])
@@ -136,7 +154,7 @@ def gen_frames():
                             break
                     if broken == True:
                         print("Dalgona Broken")
-                        result = "4"
+                        result = "2"
                         return "Dalgona Broken"
                     if correct == False:
                         print("*********************die***********************")
@@ -147,6 +165,9 @@ def gen_frames():
                         print("game complete----------------")
                         # result = "2"
                         break
+            if remain_time == 0:
+                result = "3"
+                return
 
             ret, buffer = cv2.imencode('.jpg', img)
             frame = buffer.tobytes()
@@ -154,21 +175,12 @@ def gen_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     if dr.score(contours[1], imgCanvas1, shape_num) == "success":
-        score = log.count(1)/len(log)*100
-        if score <= 75:
-            print('하')
-            result = "3"
-        elif 75 < score <= 85:
-            print('중')
-            result = "2"
-        else:
-            print('상')
-            result = "1"
-        print(score)
+        score = log.count(1) / len(log) * 100
+        result = str(score)
         return "점수 : " + str(log.count(1) / len(log) * 100)
     elif dr.score(contours[1], imgCanvas1, shape_num) == "fail":
         print("실패")
-        result = "3"
+        result = "1"
         return "실패"
 
 
@@ -178,6 +190,7 @@ def gen_frames1():
     global result
     global shape_num
 
+    time.sleep(0.2)
     while result == "0":
         if start_condition == False:
             imgCanvas = cv2.imread(imglist[shape_num])
@@ -209,7 +222,7 @@ def gen_frames1():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-    if result == "4":
+    if result == "2":
         cv2.line(imgCanvas, (xp, yp), (250, 250), (200, 200, 200), 6)
         if xp <= 250:
             if yp <= 250:
@@ -233,7 +246,15 @@ def gen_frames1():
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    global start_condition
+    start_condition = False
+    global starttimer
+    starttimer = False
+    global result
+    global shape_num
+    result = "0"
+    global remain_time
+    remain_time = 15
 
 
 @app.route('/video_feed')
@@ -245,6 +266,8 @@ def video_feed():
     global result
     global shape_num
     result = "0"
+    global remain_time
+    remain_time = 15
 
     # 달고나 모양 랜덤 선택
     shape_num = random.randrange(0, 5)
