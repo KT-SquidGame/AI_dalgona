@@ -64,11 +64,10 @@ def timer(startlist, shape_num):
     thread = Thread(target=timer1, args=())
     thread.start()
 
-
 def timer1():
     global remain_time
     global start_condition
-    time_limit = time.time() + 15
+    time_limit = time.time() + 20
     while time.time() < time_limit:
         remain_time = round(time_limit - time.time())
         cv2.putText(img, str(remain_time), (500, 100), cv2.FONT_HERSHEY_DUPLEX, 3, (255, 0, 0), 2)
@@ -142,12 +141,12 @@ def gen_frames():
                     correct = False
                     broken = True
                     for i in range(len(contours[1])):
-                        if contours[1][i][0][0] - 23 < x1 < contours[1][i][0][0] + 23 and \
-                                contours[1][i][0][1] - 23 < y1 < contours[1][i][0][1] + 23 and broken == True:
+                        if contours[1][i][0][0] - 20 < x1 < contours[1][i][0][0] + 20 and \
+                                contours[1][i][0][1] - 20 < y1 < contours[1][i][0][1] + 20 and broken == True:
                             broken = False
 
-                        if (contours[1][i][0][0] - 10 < x1 < contours[1][i][0][0] + 10) and \
-                                (contours[1][i][0][1] - 10 < y1 < contours[1][i][0][1] + 10):
+                        if (contours[1][i][0][0] - 8 < x1 < contours[1][i][0][0] + 8) and \
+                                (contours[1][i][0][1] - 8 < y1 < contours[1][i][0][1] + 8):
                             correct = True
                             print("ALIVE")
                             log.append(1)

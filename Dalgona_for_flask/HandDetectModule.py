@@ -44,14 +44,16 @@ class MPHands():
     def Up(self):
         fingers_state = []
         # 엄지손가락
-        if self.coordinates[self.tipends[0]][1] < self.coordinates[self.tipends[0] - 1][1]: #엄지손가락 3번, 4번 x값비교
+        if self.coordinates[self.tipends[0]][1] < self.coordinates[self.tipends[0] - 1][1]:
+            #엄지손가락 3번, 4번 x값비교
             fingers_state.append(1)
         else:
             fingers_state.append(0)
     
         # 나머지 손가락
         for id in range(1, 5):
-            if self.coordinates[self.tipends[id]][2] < self.coordinates[self.tipends[id] - 2][2]: #나머지손가락 8,6 / 12,10 / 16,14 / 20,18 y값 비교
+            if self.coordinates[self.tipends[id]][2] < self.coordinates[self.tipends[id] - 2][2]:
+                #나머지손가락 8,6 / 12,10 / 16,14 / 20,18 y값 비교
                 fingers_state.append(1)
             else:
                 fingers_state.append(0)
