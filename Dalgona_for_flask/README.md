@@ -60,7 +60,7 @@
 
 ## System Structure
 <p align="center">
-![system structure](https://user-images.githubusercontent.com/78125184/148162351-e08861fc-efac-4afb-a44b-318460d3c9ff.png)
+    <img src="https://user-images.githubusercontent.com/78125184/148162351-e08861fc-efac-4afb-a44b-318460d3c9ff.png"/>
 </p>
 
 ## Contributor
