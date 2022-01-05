@@ -7,7 +7,8 @@
 <p align="center">
   <a href="#tutorial">Tutorial</a></a> • 
   <a href="#features">Features</a> •  
-  <a href="#system-structure">System Structures</a> • 
+  <a href="#system-structure">System Structures</a> •
+  <a href="#Files">Files</a> • 
   <a href="#contributor">Contributors</a> • 
   <a href="#license">License</a>
 </p>
@@ -19,19 +20,12 @@
 </p>
 
 
-
-
-
-
-
 ## Tutorial
 
 1. 코드 다운
 2. npm install 실행
 3. npm run start 실행
 4. 회원가입 또는 로그인 후 게임을 즐긴다.
-
-
 
 
 ## Features
@@ -57,11 +51,21 @@
 </p>
 
 
+## Files
+<p align="center">
+    <h5>1. img : 달고나 이미지 저장 폴더</h5>
+    <h5>2. templates : 테스트 페이지 저장 폴더</h5>
+    <h5>3. HandDetectModel.py : 손 인식 모델</h5>
+    <h5>4. dalgona_result : contour 비교 모듈</h5>
+    <h5>5. main.py : 달고나 게임 메인 서버</h5>
+</p>
+
 
 ## System Structure
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/78125184/148162351-e08861fc-efac-4afb-a44b-318460d3c9ff.png"/>
+    <img src="https://user-images.githubusercontent.com/78125184/148163269-492f7c99-41c2-43ef-8170-5182d8730ff2.png"/>
 </p>
+
 
 ## Contributor
 
