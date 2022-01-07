@@ -27,7 +27,7 @@
 3. pip install mediapipe==0.8.8
 4. pip install flask
 5. pip install numpy
-6. 이 외 미설치 라이브러리 설치(requirements 파일 참고)
+6. 이 외 미설치 라이브러리 설치(상위 폴더 requirements 파일 참고)
 7. main.py 코드 실행
 8. 서버 IP 접속하여 게임 시작(127.0.0.1:5000) * 로컬환경(테스트 페이지)에서 게임 단독 실행시
 
